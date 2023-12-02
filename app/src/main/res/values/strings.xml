@@ -1,0 +1,17 @@
+<resources>
+	<string name="app_name">LibraryApp</string>
+	<string name="hint_book_title">Title..</string>
+	<string name="hint_book_author">Author..</string>
+	<string name="button_save">Save</string>
+	<string name="book_added">Book has been saved</string>
+	<string name="book_updated">Book has been updated</string>
+	<string name="book_removed">Book has been removed</string>
+	<string name="book_not_removed">Book has not been removed</string>
+	<string name="empty_not_saved">Book not saved because there are empty fields.</string>
+	<string name="confirm_deletion_question">Do you want to delete the book?</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="confirm_deletion_title">Confirm deletion</string>
+	<string name="book_archived">The book has been archived</string>
+	<string name="action_settings">Settings\n</string>
+</resources>
