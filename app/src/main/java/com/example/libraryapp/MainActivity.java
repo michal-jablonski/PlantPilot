@@ -3,85 +3,121 @@ package com.example.libraryapp;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
+import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.libraryapp.databinding.ActivityMainBinding;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int NEW_BOOK_ACTIVITY_REQUEST_CODE = 1;
-    public static final int EDIT_BOOK_ACTIVITY_REQUEST_CODE = 2;
-    private BookViewModel bookViewModel;
-    private Book editedBook;
+    public static final String IMAGE_URL_BASE = "http://covers.openlibrary.org/b/id/";
+    public static final int SHOW_BOOK_DETAILS_ACTIVITY_REQUEST_CODE = 1;
+
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        FloatingActionButton addBookButton = findViewById(R.id.add_button);
-        addBookButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, EditBookActivity.class);
-            startActivityForResult(intent, NEW_BOOK_ACTIVITY_REQUEST_CODE);
-        });
-
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        final BookAdapter adapter = new BookAdapter();
-        recyclerView.setAdapter(adapter);
-        setupSwipeToDelete(recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        bookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
-        bookViewModel.findAll().observe(this, adapter::setBooks);
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        setSupportActionBar(binding.toolbar);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.book_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                fetchBooksData(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == NEW_BOOK_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
-            Book book = new Book(data.getStringExtra(EditBookActivity.EXTRA_EDIT_BOOK_TITLE),
-                    data.getStringExtra(EditBookActivity.EXTRA_EDIT_BOOK_AUTHOR));
-            bookViewModel.insert(book);
-            Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.book_added),
-                    Snackbar.LENGTH_LONG).show();
-        } else if (requestCode == EDIT_BOOK_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
-            editedBook.setTitle(data.getStringExtra(EditBookActivity.EXTRA_EDIT_BOOK_TITLE));
-            editedBook.setAuthor(data.getStringExtra(EditBookActivity.EXTRA_EDIT_BOOK_AUTHOR));
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-            bookViewModel.update(editedBook);
-            Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.book_updated),
-                    Snackbar.LENGTH_LONG).show();
-            editedBook = null;
-        } else {
-            Snackbar.make(findViewById(R.id.coordinator_layout),
-                            getString(R.string.empty_not_saved),
-                            Snackbar.LENGTH_LONG)
-                    .show();
+        if (id == R.id.menu_item_clear) {
+            searchView.setQuery("", false);
+            setupBookListView(new ArrayList<>());
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
+    private void fetchBooksData(String query) {
+        String finalQuery = prepareQuery(query);
+        BookService bookService = RetrofitInstance.getRetrofitInstance().create(BookService.class);
+        Call<BookContainer> booksApiCall = bookService.findBooks(finalQuery);
+        booksApiCall.enqueue(new Callback<BookContainer>() {
+            @Override
+            public void onResponse(@NonNull Call<BookContainer> call, @NonNull Response<BookContainer> response) {
+                if (response.body() != null) {
+                    setupBookListView(response.body().getBookList());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BookContainer> call, @NonNull Throwable t) {
+                Snackbar.make(findViewById(R.id.coordinator_layout), R.string.error_message,
+                        BaseTransientBottomBar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private String prepareQuery(String query) {
+        String[] queryParts = query.split("\\s+");
+        return TextUtils.join("+", queryParts);
+    }
+
+    private void setupBookListView(List<Book> books) {
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        final BookAdapter adapter = new BookAdapter();
+        adapter.setBooks(books);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    public boolean checkNullOrEmpty(String text) {
+        return text != null && !TextUtils.isEmpty(text);
+    }
+
+
     private class BookHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
+
         private TextView bookTitleTextView;
         private TextView bookAuthorTextView;
+        private TextView numberOfPagesTextView;
+        private ImageView bookCover;
 
         private Book book;
 
@@ -89,33 +125,43 @@ public class MainActivity extends AppCompatActivity {
             super(inflater.inflate(R.layout.book_list_item, parent, false));
             bookTitleTextView = itemView.findViewById(R.id.book_title);
             bookAuthorTextView = itemView.findViewById(R.id.book_author);
+            numberOfPagesTextView = itemView.findViewById(R.id.number_of_pages);
+            bookCover = itemView.findViewById(R.id.img_cover);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
 
         public void bind(Book book) {
-            this.book = book;
-            bookTitleTextView.setText(book.getTitle());
-            bookAuthorTextView.setText(book.getAuthor());
+            if (book != null && checkNullOrEmpty(book.getTitle()) && book.getAuthors() != null) {
+                this.book = book;
+                bookTitleTextView.setText(book.getTitle());
+                bookAuthorTextView.setText(TextUtils.join(", ", book.getAuthors()));
+                numberOfPagesTextView.setText(book.getNumberOfPages());
+                if (book.getCover() != null) {
+                    Picasso.with(itemView.getContext())
+                            .load(IMAGE_URL_BASE + book.getCover() + "-S.jpg")
+                            .placeholder(R.drawable.ic_book_24).into(bookCover);
+                } else {
+                    bookCover.setImageResource(R.drawable.ic_book_24);
+                }
+            }
         }
 
         @Override
         public void onClick(View v) {
-            editedBook = book;
-            Intent intent = new Intent(MainActivity.this, EditBookActivity.class);
-            intent.putExtra(EditBookActivity.EXTRA_EDIT_BOOK_TITLE, book.getTitle());
-            intent.putExtra(EditBookActivity.EXTRA_EDIT_BOOK_AUTHOR, book.getAuthor());
-            startActivityForResult(intent, EDIT_BOOK_ACTIVITY_REQUEST_CODE);
+            Intent intent = new Intent(MainActivity.this, BookDetailsActivity.class);
+            intent.putExtra(BookDetailsActivity.EXTRA_BOOK_DETAILS, book);
+            startActivityForResult(intent, SHOW_BOOK_DETAILS_ACTIVITY_REQUEST_CODE);
         }
 
         @Override
         public boolean onLongClick(View v) {
-             new AlertDialog.Builder(MainActivity.this)
+            new AlertDialog.Builder(MainActivity.this)
                     .setTitle(R.string.confirm_deletion_title)
                     .setMessage(R.string.confirm_deletion_question)
                     .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        bookViewModel.delete(book);
+//                        bookViewModel.delete(book);
                         Snackbar.make(findViewById(R.id.coordinator_layout), R.string.book_removed, Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
@@ -123,37 +169,6 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         }
-    }
-
-    private void setupSwipeToDelete(RecyclerView recyclerView) {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
-                0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT
-        ) {
-            @Override
-            public boolean onMove(
-                    @NonNull RecyclerView recyclerView,
-                    @NonNull RecyclerView.ViewHolder viewHolder,
-                    @NonNull RecyclerView.ViewHolder target
-            ) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                if (direction == ItemTouchHelper.LEFT || direction == ItemTouchHelper.RIGHT) {
-                    Snackbar.make(findViewById(R.id.coordinator_layout), R.string.book_archived, Snackbar.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) {
-                return 0.5f;
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     private class BookAdapter extends RecyclerView.Adapter<BookHolder> {

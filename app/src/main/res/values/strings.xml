@@ -14,4 +14,12 @@
 	<string name="confirm_deletion_title">Confirm deletion</string>
 	<string name="book_archived">The book has been archived</string>
 	<string name="action_settings">Settings\n</string>
+	<string name="clear_search">Clear search</string>
+	<string name="search">Search</string>
+	<string name="error_message">Something went wrong.. Please try later!</string>
+	<string name="book_cover">Book cover</string>
+	<string name="book_title" formatted="false">Title: %s</string>
+	<string name="book_author" formatted="false">Authors: %s</string>
+	<string name="book_published_year" formatted="false">Published year: %d</string>
+	<string name="book_subjects" formatted="false">Book subjects:\n%s</string>
 </resources>
