@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "LibraryApp"
+rootProject.name = "PlantPilot"
 include(":app")
  

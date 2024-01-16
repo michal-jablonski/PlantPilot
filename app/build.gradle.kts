@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.libraryapp"
+    namespace = "com.example.plantpilot"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.libraryapp"
+        applicationId = "com.example.plantpilot"
         minSdk = 29
         targetSdk = 33
         versionCode = 1

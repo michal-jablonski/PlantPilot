@@ -1,4 +1,4 @@
-package com.example.libraryapp;
+package com.example.plantpilot;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -20,6 +20,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.example.libraryapp", appContext.getPackageName());
+        assertEquals("com.example.plantpilot", appContext.getPackageName());
     }
 }

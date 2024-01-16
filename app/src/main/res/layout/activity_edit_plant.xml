@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
 	<EditText
-			android:id="@+id/edit_book_title"
+			android:id="@+id/edit_plant_name"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:fontFamily="sans-serif-light"
-			android:hint="@string/hint_book_title"
+			android:hint="@string/hint_plant_name"
 			android:inputType="textAutoComplete"
 			android:padding="@dimen/small_padding"
 			android:layout_marginBottom="@dimen/big_padding"
@@ -18,11 +17,11 @@
 			android:textSize="18sp"/>
 
 	<EditText
-			android:id="@+id/edit_book_author"
+			android:id="@+id/edit_plant_description"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:fontFamily="sans-serif-light"
-			android:hint="@string/hint_book_author"
+			android:hint="@string/hint_plant_description"
 			android:inputType="textAutoComplete"
 			android:padding="@dimen/small_padding"
 			android:layout_marginBottom="@dimen/big_padding"

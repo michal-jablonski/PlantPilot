@@ -1,4 +1,4 @@
-package com.example.libraryapp;
+package com.example.plantpilot;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
@@ -10,17 +10,17 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Book.class}, version = 1, exportSchema = false)
-public abstract class BookDatabase extends RoomDatabase {
-    private static BookDatabase databaseInstance;
+@Database(entities = {Plant.class}, version = 1, exportSchema = false)
+public abstract class PlantDatabase extends RoomDatabase {
+    private static PlantDatabase databaseInstance;
     static final ExecutorService databaseWriteExecutor = Executors.newSingleThreadExecutor();
 
-    public abstract BookDao bookDao();
+    public abstract PlantDao plantDao();
 
-    static BookDatabase getDatabase(final Context context) {
+    static PlantDatabase getDatabase(final Context context) {
         if (databaseInstance == null) {
             databaseInstance = Room.databaseBuilder(context.getApplicationContext(),
-                            BookDatabase.class, "book_database")
+                            PlantDatabase.class, "plant_database")
                     .addCallback(roomDatabaseCallback)
                     .build();
         }
@@ -32,8 +32,8 @@ public abstract class BookDatabase extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             databaseWriteExecutor.execute(() -> {
-                BookDao dao = databaseInstance.bookDao();
-                Book book = new Book("Clean Code", "Robert C. Martin");
+                PlantDao dao = databaseInstance.plantDao();
+                Plant book = new Plant("Clean Code", "Robert C. Martin");
                 dao.insert(book);
             });
         }

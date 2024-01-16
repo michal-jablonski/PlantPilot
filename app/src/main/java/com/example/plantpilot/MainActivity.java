@@ -1,4 +1,4 @@
-package com.example.libraryapp;
+package com.example.plantpilot;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -22,30 +22,30 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int NEW_BOOK_ACTIVITY_REQUEST_CODE = 1;
-    public static final int EDIT_BOOK_ACTIVITY_REQUEST_CODE = 2;
-    private BookViewModel bookViewModel;
-    private Book editedBook;
+    public static final int NEW_PLANT_ACTIVITY_REQUEST_CODE = 1;
+    public static final int EDIT_REQUEST_ACTIVITY_REQUEST_CODE = 2;
+    private PlantViewModel plantViewModel;
+    private Plant editedPlant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FloatingActionButton addBookButton = findViewById(R.id.add_button);
-        addBookButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, EditBookActivity.class);
-            startActivityForResult(intent, NEW_BOOK_ACTIVITY_REQUEST_CODE);
+        FloatingActionButton addPlantButton = findViewById(R.id.add_button);
+        addPlantButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, EditPlantActivity.class);
+            startActivityForResult(intent, NEW_PLANT_ACTIVITY_REQUEST_CODE);
         });
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        final BookAdapter adapter = new BookAdapter();
+        final PlantAdapter adapter = new PlantAdapter();
         recyclerView.setAdapter(adapter);
         setupSwipeToDelete(recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        bookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
-        bookViewModel.findAll().observe(this, adapter::setBooks);
+        plantViewModel = new ViewModelProvider(this).get(PlantViewModel.class);
+        plantViewModel.findAll().observe(this, adapter::setPlants);
     }
 
     @Override
@@ -57,20 +57,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == NEW_BOOK_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
-            Book book = new Book(data.getStringExtra(EditBookActivity.EXTRA_EDIT_BOOK_TITLE),
-                    data.getStringExtra(EditBookActivity.EXTRA_EDIT_BOOK_AUTHOR));
-            bookViewModel.insert(book);
-            Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.book_added),
+        if (requestCode == NEW_PLANT_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
+            Plant Plant = new Plant(data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME),
+                    data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION));
+            plantViewModel.insert(Plant);
+            Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.item_added),
                     Snackbar.LENGTH_LONG).show();
-        } else if (requestCode == EDIT_BOOK_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
-            editedBook.setTitle(data.getStringExtra(EditBookActivity.EXTRA_EDIT_BOOK_TITLE));
-            editedBook.setAuthor(data.getStringExtra(EditBookActivity.EXTRA_EDIT_BOOK_AUTHOR));
+        } else if (requestCode == EDIT_REQUEST_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
+            editedPlant.setName(data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME));
+            editedPlant.setDescription(data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION));
 
-            bookViewModel.update(editedBook);
-            Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.book_updated),
+            plantViewModel.update(editedPlant);
+            Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.item_updated),
                     Snackbar.LENGTH_LONG).show();
-            editedBook = null;
+            editedPlant = null;
         } else {
             Snackbar.make(findViewById(R.id.coordinator_layout),
                             getString(R.string.empty_not_saved),
@@ -79,34 +79,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class BookHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
-        private TextView bookTitleTextView;
-        private TextView bookAuthorTextView;
+    private class PlantHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
+        private final TextView plantNameTextView;
+        private final TextView plantDescriptionTextView;
 
-        private Book book;
+        private Plant plant;
 
-        public BookHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.book_list_item, parent, false));
-            bookTitleTextView = itemView.findViewById(R.id.book_title);
-            bookAuthorTextView = itemView.findViewById(R.id.book_author);
+        public PlantHolder(LayoutInflater inflater, ViewGroup parent) {
+            super(inflater.inflate(R.layout.plant_list_item, parent, false));
+            plantNameTextView = itemView.findViewById(R.id.plant_title);
+            plantDescriptionTextView = itemView.findViewById(R.id.plant_author);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
 
-        public void bind(Book book) {
-            this.book = book;
-            bookTitleTextView.setText(book.getTitle());
-            bookAuthorTextView.setText(book.getAuthor());
+        public void bind(Plant Plant) {
+            this.plant = Plant;
+            plantNameTextView.setText(Plant.getName());
+            plantDescriptionTextView.setText(Plant.getDescription());
         }
 
         @Override
         public void onClick(View v) {
-            editedBook = book;
-            Intent intent = new Intent(MainActivity.this, EditBookActivity.class);
-            intent.putExtra(EditBookActivity.EXTRA_EDIT_BOOK_TITLE, book.getTitle());
-            intent.putExtra(EditBookActivity.EXTRA_EDIT_BOOK_AUTHOR, book.getAuthor());
-            startActivityForResult(intent, EDIT_BOOK_ACTIVITY_REQUEST_CODE);
+            editedPlant = plant;
+            Intent intent = new Intent(MainActivity.this, EditPlantActivity.class);
+            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME, plant.getName());
+            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION, plant.getDescription());
+            startActivityForResult(intent, EDIT_REQUEST_ACTIVITY_REQUEST_CODE);
         }
 
         @Override
@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle(R.string.confirm_deletion_title)
                     .setMessage(R.string.confirm_deletion_question)
                     .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        bookViewModel.delete(book);
-                        Snackbar.make(findViewById(R.id.coordinator_layout), R.string.book_removed, Toast.LENGTH_SHORT).show();
+                        plantViewModel.delete(plant);
+                        Snackbar.make(findViewById(R.id.coordinator_layout), R.string.item_removed, Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
                     .show();
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 if (direction == ItemTouchHelper.LEFT || direction == ItemTouchHelper.RIGHT) {
-                    Snackbar.make(findViewById(R.id.coordinator_layout), R.string.book_archived, Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.coordinator_layout), R.string.plant_archived, Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -156,36 +156,36 @@ public class MainActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private class BookAdapter extends RecyclerView.Adapter<BookHolder> {
-        private List<Book> books;
+    private class PlantAdapter extends RecyclerView.Adapter<PlantHolder> {
+        private List<Plant> plants;
 
         @NonNull
         @Override
-        public BookHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new BookHolder(getLayoutInflater(), parent);
+        public PlantHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new PlantHolder(getLayoutInflater(), parent);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull BookHolder holder, int position) {
-            if (books != null) {
-                Book book = books.get(position);
-                holder.bind(book);
+        public void onBindViewHolder(@NonNull PlantHolder holder, int position) {
+            if (plants != null) {
+                Plant Plant = plants.get(position);
+                holder.bind(Plant);
             } else {
-                Log.d("MainActivity", "No books");
+                Log.d("MainActivity", "No Plants");
             }
         }
 
         @Override
         public int getItemCount() {
-            if (books != null) {
-                return books.size();
+            if (plants != null) {
+                return plants.size();
             } else {
                 return 0;
             }
         }
 
-        void setBooks(List<Book> books) {
-            this.books = books;
+        void setPlants(List<Plant> plants) {
+            this.plants = plants;
             notifyDataSetChanged();
         }
     }
