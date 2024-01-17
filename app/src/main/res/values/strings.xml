@@ -14,4 +14,8 @@
 	<string name="confirm_deletion_title">Confirm deletion</string>
 	<string name="plant_archived">The Plant has been archived</string>
 	<string name="action_settings">Settings\n</string>
+	<string name="button_capture_image">Add photo</string>
+	<string name="button_capture_image_taken">Change photo</string>
+	<string name="captured_plant_image_description">captured_plant_photo</string>
+    <string name="apikey"></string>
 </resources>
