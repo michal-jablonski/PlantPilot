@@ -16,34 +16,6 @@ public class NotificationScheduler {
     public static final String PLANT_NAME_NOTIFICATION_KEY = "plan_name_notification_key";
 
     public static void makeNotification(Context context, String title) {
-//        String channelId = "CHANNEL_ID_NOTIFICATION";
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
-//        builder
-//                .setSmallIcon(R.drawable.ic_add_black_24)
-//                .setContentTitle(title)
-//                .setContentText("Some text for notification here")
-//                .setAutoCancel(true)
-//                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-//
-//        Intent intent = new Intent(context, EditPlantActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        intent.putExtra("data", "Some value to be passed here");
-//
-//        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
-//        builder.setContentIntent(pendingIntent);
-//        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        NotificationChannel notificationChannel =
-//                notificationManager.getNotificationChannel(channelId);
-//        if (notificationChannel == null) {
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//            notificationChannel = new NotificationChannel(channelId, "Some description", importance);
-//            notificationChannel.setLightColor(Color.GREEN);
-//            notificationChannel.enableVibration(true);
-//            notificationManager.createNotificationChannel(notificationChannel);
-//        }
-//
-//        notificationManager.notify(0, builder.build());
         scheduleNotification(context);
     }
 
@@ -68,7 +40,6 @@ public class NotificationScheduler {
     }
 
     public static long calculateMillisUntilWatering(Plant plant) {
-        // Pobierz bieżący kalendarz i czas
         Weekday wateringDay = plant.getWateringDay();
         LocalTime wateringTime = plant.getWateringTime();
 
@@ -77,16 +48,13 @@ public class NotificationScheduler {
         int currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY);
         int currentMinute = currentCalendar.get(Calendar.MINUTE);
 
-        // Oblicz numer dnia tygodnia dla podlania
-        int wateringDayOfWeek = wateringDay.ordinal() + 1; // +2, ponieważ Weekday zaczyna się od Monday (Monday ma wartość 0)
+        int wateringDayOfWeek = wateringDay.value;
 
-        // Sprawdź, czy dniem podlania jest dzisiaj, czy później w tygodniu
         int daysUntilWatering = wateringDayOfWeek - currentDayOfWeek;
         if (daysUntilWatering < 0) {
-            daysUntilWatering += 7; // Jeśli roślina ma być podlana w następnym tygodniu, dodaj 7 dni
+            daysUntilWatering += 7;
         }
 
-        // Oblicz różnicę czasu między bieżącym czasem a czasem podlania
         int wateringHour = wateringTime.getHour();
         int wateringMinute = wateringTime.getMinute();
         long millisUntilWatering = daysUntilWatering * 24 * 60 * 60 * 1000 +
@@ -94,7 +62,6 @@ public class NotificationScheduler {
                 (wateringMinute - currentMinute) * 60 * 1000;
 
         if (millisUntilWatering < 0) {
-            // Jeśli czas podlania już minął w tym tygodniu, dodaj 7 dni
             millisUntilWatering += 7 * 24 * 60 * 60 * 1000;
         }
 

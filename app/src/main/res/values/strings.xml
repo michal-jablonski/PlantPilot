@@ -14,10 +14,19 @@
 	<string name="confirm_deletion_title">Confirm deletion</string>
 	<string name="plant_archived">The Plant has been archived</string>
 	<string name="action_settings">Settings\n</string>
+	<string name="button_capture_image">Add photo</string>
+	<string name="button_capture_image_taken">Change photo</string>
+	<string name="captured_plant_image_description">captured_plant_photo</string>
+    <string name="apikey">r3XOrfqcAO0psBzPZ7ACt5PsRxjggR1lDhsbkVWpu1zGI7osXr</string>
     <string name="time_for_watering">Time for watering!</string>
 	<string name="scheduled_notifications">Scheduled Notifications</string>
 	<string name="youtube_not_installed">Aplikacja YouTube nie jest zainstalowana</string>
 	<string name="no_app_to_open_youtube">Brak aplikacji do obsługi wyszukiwania w YouTube</string>
 	<string name="youtube_link">https://www.youtube.com/results?search_query=</string>
 	<string name="youtube_package">com.google.android.youtube</string>
+    <string name="watering_weekday">Watering weekday:</string>
+	<string name="watering_time">Watering time:</string>
+    <string name="plant_name">Name\n</string>
+	<string name="plant_description">Description</string>
+	<string name="watering_day">Watering Day:</string>
 </resources>

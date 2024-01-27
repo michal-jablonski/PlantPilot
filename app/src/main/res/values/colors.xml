@@ -3,6 +3,7 @@
 	<color name="black">#FF000000</color>
 	<color name="white">#FFFFFFFF</color>
 	<color name="buttonColor">#512B81</color>
+	<color name="cardColor">#191919</color>
 	<color name="hintColor">#B9B4C7</color>
 	<color name="darkBackgroundColor">#0F0F0F</color>
 </resources>

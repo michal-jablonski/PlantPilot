@@ -11,6 +11,7 @@ public class PlantViewModel extends AndroidViewModel {
     private final PlantRepository plantRepository;
     private final LiveData<List<Plant>> plants;
 
+
     public PlantViewModel(@NonNull Application application) {
         super(application);
         plantRepository = new PlantRepository(application);

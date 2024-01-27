@@ -4,7 +4,8 @@
 
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 	<uses-permission android:name="android.permission.INTERNET" />
-	<queries>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <queries>
 		<package android:name="com.google.android.youtube" />
 	</queries>
 	<application
@@ -17,6 +18,7 @@
 			android:supportsRtl="true"
 			android:theme="@style/Theme.LibraryApp"
 			tools:targetApi="31">
+
 		<activity
 				android:name=".MainActivity"
 				android:exported="true"

@@ -3,7 +3,17 @@
 	<style name="Base.Theme.LibraryApp"
 	       parent="Theme.Material3.DayNight.NoActionBar">
 		<!-- Customize your light theme here. -->
-		<!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+		 <item name="android:textColorPrimary">@color/hintColor</item>
+		 <item name="android:textColor">@color/hintColor</item>
+		 <item name="android:textColorSecondary">@color/buttonColor</item>
+		 <item name="android:colorPrimaryDark">@color/buttonColor</item>
+		 <item name="android:spinnerItemStyle">@color/black</item>
+		<item name="colorAccent">@color/white</item>
+			<item name="android:numbersTextColor" >#ffffff</item>
+			<item name="android:numbersBackgroundColor" >#643B85</item>
+			<item name="android:numbersSelectorColor">#88000000</item>
+			<item name="android:headerBackground">#643B85</item>
+
 		<item name="android:windowBackground">@color/darkBackgroundColor</item>
 	</style>
 

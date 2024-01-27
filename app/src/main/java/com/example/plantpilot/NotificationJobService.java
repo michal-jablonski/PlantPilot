@@ -41,14 +41,15 @@ public class NotificationJobService extends JobService {
                 .setContentTitle(plantName)
                 .setContentText(getString(R.string.time_for_watering))
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         NotificationChannel channel = new NotificationChannel(
                 channelId,
                 getString(R.string.scheduled_notifications),
-                NotificationManager.IMPORTANCE_DEFAULT);
+                NotificationManager.IMPORTANCE_HIGH);
         channel.enableLights(true);
         channel.setLightColor(Color.GREEN);
         channel.enableVibration(true);
