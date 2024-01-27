@@ -14,4 +14,10 @@
 	<string name="confirm_deletion_title">Confirm deletion</string>
 	<string name="plant_archived">The Plant has been archived</string>
 	<string name="action_settings">Settings\n</string>
+    <string name="time_for_watering">Time for watering!</string>
+	<string name="scheduled_notifications">Scheduled Notifications</string>
+	<string name="youtube_not_installed">Aplikacja YouTube nie jest zainstalowana</string>
+	<string name="no_app_to_open_youtube">Brak aplikacji do obsługi wyszukiwania w YouTube</string>
+	<string name="youtube_link">https://www.youtube.com/results?search_query=</string>
+	<string name="youtube_package">com.google.android.youtube</string>
 </resources>

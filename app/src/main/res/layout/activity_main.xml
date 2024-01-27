@@ -30,5 +30,5 @@
 			android:layout_margin="16dp"
 			android:layout_gravity="bottom|end"
 			app:backgroundTint="@color/buttonColor"
-			android:src="@drawable/ic_add_black_24"/>
+			android:src="@drawable/ic_plant_24"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

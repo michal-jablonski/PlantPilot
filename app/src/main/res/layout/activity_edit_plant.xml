@@ -10,10 +10,12 @@
 			android:layout_height="wrap_content"
 			android:fontFamily="sans-serif-light"
 			android:hint="@string/hint_plant_name"
+			android:textColorHint="@color/hintColor"
 			android:inputType="textAutoComplete"
 			android:padding="@dimen/small_padding"
 			android:layout_marginBottom="@dimen/big_padding"
 			android:layout_marginTop="@dimen/big_padding"
+			android:textColor="@color/white"
 			android:textSize="18sp"/>
 
 	<EditText
@@ -22,10 +24,12 @@
 			android:layout_height="wrap_content"
 			android:fontFamily="sans-serif-light"
 			android:hint="@string/hint_plant_description"
+			android:textColorHint="@color/hintColor"
 			android:inputType="textAutoComplete"
 			android:padding="@dimen/small_padding"
 			android:layout_marginBottom="@dimen/big_padding"
 			android:layout_marginTop="@dimen/big_padding"
+			android:textColor="@color/white"
 			android:textSize="18sp"/>
 
 	<Button
@@ -34,4 +38,16 @@
 			android:layout_height="wrap_content"
 			android:background="@color/buttonColor"
 			android:text="@string/button_save"/>
+	<Button
+			android:id="@+id/btnScheduleNotification"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@color/buttonColor"
+			android:text="Send notification 123"/>
+	<Button
+			android:id="@+id/btnYoutube"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@color/buttonColor"
+			android:text="Youtube test"/>
 </LinearLayout>

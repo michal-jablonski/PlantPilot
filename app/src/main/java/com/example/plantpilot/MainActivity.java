@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.time.LocalTime;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -59,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEW_PLANT_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
             Plant Plant = new Plant(data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME),
-                    data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION));
+                    data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION), Weekday.Sunday, LocalTime.now().plusSeconds(60));
             plantViewModel.insert(Plant);
+            NotificationScheduler.scheduleWateringJobForPlant(this, Plant);
             Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.item_added),
                     Snackbar.LENGTH_LONG).show();
         } else if (requestCode == EDIT_REQUEST_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {

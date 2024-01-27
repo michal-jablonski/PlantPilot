@@ -23,5 +23,5 @@ public interface PlantDao {
     LiveData<List<Plant>> findAll();
 
     @Query("SELECT * FROM Plant WHERE name LIKE :name")
-    List<Plant> findBookWithTitle(String name);
+    List<Plant> findPlantByName(String name);
 }

@@ -21,8 +21,8 @@ public class PlantViewModel extends AndroidViewModel {
         return plants;
     }
 
-    public void insert(Plant book) {
-        plantRepository.insert(book);
+    public void insert(Plant plant) {
+        plantRepository.insert(plant);
     }
 
     public void update(Plant plant) {
