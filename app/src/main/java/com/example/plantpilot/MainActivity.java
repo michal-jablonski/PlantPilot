@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         final PlantAdapter adapter = new PlantAdapter();
         recyclerView.setAdapter(adapter);
-//        setupSwipeToDelete(recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         plantViewModel = new ViewModelProvider(this).get(PlantViewModel.class);
@@ -186,37 +185,6 @@ public class MainActivity extends AppCompatActivity {
     private void deletePlantAndShowSnackbar() {
         plantViewModel.delete(editedPlant);
         Snackbar.make(findViewById(R.id.coordinator_layout), R.string.item_removed, Toast.LENGTH_SHORT).show();
-    }
-
-    private void setupSwipeToDelete(RecyclerView recyclerView) {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
-                0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT
-        ) {
-            @Override
-            public boolean onMove(
-                    @NonNull RecyclerView recyclerView,
-                    @NonNull RecyclerView.ViewHolder viewHolder,
-                    @NonNull RecyclerView.ViewHolder target
-            ) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                if (direction == ItemTouchHelper.LEFT || direction == ItemTouchHelper.RIGHT) {
-                    Snackbar.make(findViewById(R.id.coordinator_layout), R.string.plant_archived, Snackbar.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) {
-                return 0.5f;
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     private class PlantAdapter extends RecyclerView.Adapter<PlantHolder> {

@@ -28,7 +28,6 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalTime;
 
 public class EditPlantActivity extends AppCompatActivity {
-    private static final String TAG = "EditPlantActivity";
     public static final String EXTRA_EDIT_PLANT_NAME = "pb.edu.pl.EDIT_PLANT_NAME";
     public static final String EXTRA_EDIT_PLANT_DESCRIPTION = "pb.edu.pl.EDIT_PLANT_DESCRIPTION";
     public static final String EXTRA_EDIT_PLANT_IMAGE_BITMAP = "pb.edu.pl.EDIT_PLANT_IMAGE_BITMAP";
@@ -62,12 +61,6 @@ public class EditPlantActivity extends AppCompatActivity {
                         new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
-
-        final Button btnScheduleNotification = findViewById(R.id.btnScheduleNotification);
-        btnScheduleNotification.setOnClickListener(view -> NotificationScheduler.makeNotification(this, "Test title"));
-
-        final Button btnYoutube = findViewById(R.id.btnYoutube);
-        btnYoutube.setOnClickListener(view -> PlantInformationProvider.openYouTubeAppWithPlantName(view, "Monstera deliciosa"));
     }
 
     private void initViews() {
