@@ -9,4 +9,5 @@ public class PlantApiRequest{
     public ArrayList<String> images;
     public double latitude;
     public double longitude;
+    public boolean similar_images = true;
 }

@@ -31,11 +31,6 @@ public abstract class PlantDatabase extends RoomDatabase {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-            databaseWriteExecutor.execute(() -> {
-                PlantDao dao = databaseInstance.plantDao();
-                Plant book = new Plant("Clean Code", "Robert C. Martin");
-                dao.insert(book);
-            });
         }
     };
 }

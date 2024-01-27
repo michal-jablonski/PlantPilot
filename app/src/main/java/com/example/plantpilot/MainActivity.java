@@ -2,6 +2,7 @@ package com.example.plantpilot;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,15 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.plantpilot.Services.ImageSaver;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.time.LocalTime;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton addPlantButton = findViewById(R.id.add_button);
         addPlantButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, EditPlantActivity.class);
-            startActivityForResult(intent, NEW_PLANT_ACTIVITY_REQUEST_CODE);
+            startEditPlantActivity(NEW_PLANT_ACTIVITY_REQUEST_CODE);
         });
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -57,32 +61,74 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == NEW_PLANT_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
-            Plant Plant = new Plant(data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME),
-                    data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION));
-            plantViewModel.insert(Plant);
-            Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.item_added),
-                    Snackbar.LENGTH_LONG).show();
-        } else if (requestCode == EDIT_REQUEST_ACTIVITY_REQUEST_CODE & resultCode == RESULT_OK) {
-            editedPlant.setName(data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME));
-            editedPlant.setDescription(data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION));
-
-            plantViewModel.update(editedPlant);
-            Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.item_updated),
-                    Snackbar.LENGTH_LONG).show();
-            editedPlant = null;
+        if ((requestCode == NEW_PLANT_ACTIVITY_REQUEST_CODE || requestCode == EDIT_REQUEST_ACTIVITY_REQUEST_CODE) && resultCode == RESULT_OK) {
+            handlePlantActivityResult(requestCode, data);
         } else {
-            Snackbar.make(findViewById(R.id.coordinator_layout),
-                            getString(R.string.empty_not_saved),
-                            Snackbar.LENGTH_LONG)
-                    .show();
+            showSnackbar(getString(R.string.empty_not_saved));
         }
+    }
+
+    private void handlePlantActivityResult(int requestCode, Intent data) {
+        Plant plant = createPlantFromIntentData(data);
+        Bitmap imageBitmap = (Bitmap) data.getParcelableExtra(EditPlantActivity.EXTRA_EDIT_PLANT_IMAGE_BITMAP);
+        if (requestCode == NEW_PLANT_ACTIVITY_REQUEST_CODE) {
+            plantViewModel.insert(plant);
+            ImageSaver imageSaver = new ImageSaver(getApplicationContext());
+            imageSaver.setFileName(plant.getId() + ".png")
+                    .setDirectoryName("images")
+                    .save(imageBitmap);
+            showSnackbar(getString(R.string.item_added));
+        } else if (requestCode == EDIT_REQUEST_ACTIVITY_REQUEST_CODE) {
+            ImageSaver imageSaver = new ImageSaver(getApplicationContext());
+            imageSaver.setFileName(editedPlant.getId() + ".png")
+                    .setDirectoryName("images")
+                    .save(imageBitmap);
+            updatePlantAndView(plant);
+            showSnackbar(getString(R.string.item_updated));
+        }
+    }
+
+    private Plant createPlantFromIntentData(Intent data) {
+        return new Plant(
+                data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME),
+                data.getStringExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION),
+                (Weekday) data.getSerializableExtra(EditPlantActivity.EXTRA_EDIT_PLANT_WEEK_DAY),
+                (LocalTime) data.getSerializableExtra(EditPlantActivity.EXTRA_EDIT_PLANT_TIME)
+        );
+    }
+
+    private void updatePlantAndView(Plant plant) {
+        editedPlant.setName(plant.getName());
+        editedPlant.setDescription(plant.getDescription());
+        editedPlant.setWateringDay(plant.getWateringDay());
+        editedPlant.setWateringTime(plant.getWateringTime());
+        plantViewModel.update(editedPlant);
+        editedPlant = null;
+    }
+
+    private void showSnackbar(String message) {
+        Snackbar.make(findViewById(R.id.coordinator_layout), message, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void startEditPlantActivity(int requestCode) {
+        Intent intent = new Intent(MainActivity.this, EditPlantActivity.class);
+        if (requestCode == EDIT_REQUEST_ACTIVITY_REQUEST_CODE && editedPlant != null) {
+            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME, editedPlant.getName());
+            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION, editedPlant.getDescription());
+            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_IMAGE_BITMAP, new ImageSaver(MainActivity.this)
+                    .setFileName(editedPlant.getId() + ".png")
+                    .setDirectoryName("images")
+                    .load());
+            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_WEEK_DAY, editedPlant.getWateringDay());
+            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_TIME, editedPlant.getWateringTime());
+        }
+
+        startActivityForResult(intent, requestCode);
     }
 
     private class PlantHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
         private final TextView plantNameTextView;
         private final TextView plantDescriptionTextView;
-
         private Plant plant;
 
         public PlantHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -94,35 +140,39 @@ public class MainActivity extends AppCompatActivity {
             itemView.setOnLongClickListener(this);
         }
 
-        public void bind(Plant Plant) {
-            this.plant = Plant;
-            plantNameTextView.setText(Plant.getName());
-            plantDescriptionTextView.setText(Plant.getDescription());
+        public void bind(Plant plant) {
+            this.plant = plant;
+            plantNameTextView.setText(plant.getName());
+            plantDescriptionTextView.setText(plant.getDescription());
         }
 
         @Override
         public void onClick(View v) {
             editedPlant = plant;
-            Intent intent = new Intent(MainActivity.this, EditPlantActivity.class);
-            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME, plant.getName());
-            intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION, plant.getDescription());
-            startActivityForResult(intent, EDIT_REQUEST_ACTIVITY_REQUEST_CODE);
+            startEditPlantActivity(EDIT_REQUEST_ACTIVITY_REQUEST_CODE);
         }
 
         @Override
         public boolean onLongClick(View v) {
-             new AlertDialog.Builder(MainActivity.this)
-                    .setTitle(R.string.confirm_deletion_title)
-                    .setMessage(R.string.confirm_deletion_question)
-                    .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        plantViewModel.delete(plant);
-                        Snackbar.make(findViewById(R.id.coordinator_layout), R.string.item_removed, Toast.LENGTH_SHORT).show();
-                    })
-                    .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
-                    .show();
-
+            showDeleteConfirmationDialog();
             return true;
         }
+    }
+
+    private void showDeleteConfirmationDialog() {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle(R.string.confirm_deletion_title)
+                .setMessage(R.string.confirm_deletion_question)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    deletePlantAndShowSnackbar();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    private void deletePlantAndShowSnackbar() {
+        plantViewModel.delete(editedPlant);
+        Snackbar.make(findViewById(R.id.coordinator_layout), R.string.item_removed, Toast.LENGTH_SHORT).show();
     }
 
     private void setupSwipeToDelete(RecyclerView recyclerView) {
@@ -168,8 +218,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull PlantHolder holder, int position) {
             if (plants != null) {
-                Plant Plant = plants.get(position);
-                holder.bind(Plant);
+                Plant plant = plants.get(position);
+                holder.bind(plant);
             } else {
                 Log.d("MainActivity", "No Plants");
             }
@@ -177,11 +227,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            if (plants != null) {
-                return plants.size();
-            } else {
-                return 0;
-            }
+            return plants != null ? plants.size() : 0;
         }
 
         void setPlants(List<Plant> plants) {
