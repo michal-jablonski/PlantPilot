@@ -25,9 +25,11 @@ public class NotificationScheduler {
         PersistableBundle extras = new PersistableBundle();
         extras.putString(PLANT_NAME_NOTIFICATION_KEY, plant.getName());
 
+        long minLatencyMillis = calculateMillisUntilWatering(plant);
+        Log.d("NotificationScheduler", "Millis until watering: " + minLatencyMillis);
         JobInfo.Builder builder = new JobInfo.Builder(plant.getId(), componentName)
                 .setExtras(extras)
-                .setMinimumLatency(calculateMillisUntilWatering(plant));
+                .setMinimumLatency(minLatencyMillis);
 
         jobScheduler.schedule(builder.build());
 
@@ -50,7 +52,8 @@ public class NotificationScheduler {
 
         int wateringDayOfWeek = wateringDay.value;
 
-        int daysUntilWatering = wateringDayOfWeek - currentDayOfWeek;
+        int daysUntilWatering = wateringDayOfWeek - currentDayOfWeek + 1;
+        Log.d("NotificationScheduler", "Days until watering: " + daysUntilWatering);
         if (daysUntilWatering < 0) {
             daysUntilWatering += 7;
         }

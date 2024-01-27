@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handlePlantActivityResult(int requestCode, Intent data) {
         Plant plant = createPlantFromIntentData(data);
+        NotificationScheduler.scheduleWateringJobForPlant(this, plant);
         Bitmap imageBitmap = data.getParcelableExtra(EditPlantActivity.EXTRA_EDIT_PLANT_IMAGE_BITMAP);
         if (requestCode == NEW_PLANT_ACTIVITY_REQUEST_CODE) {
             plantViewModel.insert(plant);
@@ -79,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
             imageSaver.setFileName(plant.getId() + ".png")
                     .setDirectoryName("images")
                     .save(imageBitmap);
-            NotificationScheduler.scheduleWateringJobForPlant(this, plant);
             showSnackbar(getString(R.string.item_added));
         } else if (requestCode == EDIT_REQUEST_ACTIVITY_REQUEST_CODE) {
             ImageSaver imageSaver = new ImageSaver(getApplicationContext());
