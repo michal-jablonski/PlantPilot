@@ -76,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == NEW_PLANT_ACTIVITY_REQUEST_CODE) {
             plantViewModel.insert(plant);
             ImageSaver imageSaver = new ImageSaver(getApplicationContext());
-            imageSaver.setFileName(plant.getId() + ".png")
+            imageSaver.setFileName(plant.getImageId() + ".png")
                     .setDirectoryName("images")
                     .save(imageBitmap);
             showSnackbar(getString(R.string.item_added));
         } else if (requestCode == EDIT_REQUEST_ACTIVITY_REQUEST_CODE) {
             ImageSaver imageSaver = new ImageSaver(getApplicationContext());
-            imageSaver.setFileName(editedPlant.getId() + ".png")
+            imageSaver.setFileName(editedPlant.getImageId() + ".png")
                     .setDirectoryName("images")
                     .save(imageBitmap);
             updatePlantAndView(plant);
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_NAME, editedPlant.getName());
             intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_DESCRIPTION, editedPlant.getDescription());
             intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_IMAGE_BITMAP, new ImageSaver(MainActivity.this)
-                    .setFileName(editedPlant.getId() + ".png")
+                    .setFileName(editedPlant.getImageId() + ".png")
                     .setDirectoryName("images")
                     .load());
             intent.putExtra(EditPlantActivity.EXTRA_EDIT_PLANT_WEEK_DAY, editedPlant.getWateringDay());

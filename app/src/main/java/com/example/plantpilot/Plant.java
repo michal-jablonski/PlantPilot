@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Entity(tableName = "plant")
 @TypeConverters(Converters.class)
@@ -16,12 +17,15 @@ public class Plant {
     private Weekday wateringDay;
     private LocalTime wateringTime;
 
+    private UUID imageId;
+
 
     public Plant(String name, String description, Weekday wateringDay, LocalTime wateringTime) {
         this.name = name;
         this.description = description;
         this.wateringDay = wateringDay;
         this.wateringTime = wateringTime;
+        this.imageId = UUID.randomUUID();
     }
 
 
@@ -63,5 +67,13 @@ public class Plant {
 
     public LocalTime getWateringTime() {
         return wateringTime;
+    }
+
+    public UUID getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(UUID imageId) {
+        this.imageId = imageId;
     }
 }
